@@ -7,7 +7,7 @@
     "multer": "^2.0.2",
     "mysql2": "^3.14.2"
   },
-  "name": "c237-software-application-development-ca2",
+  "name": "c270-team3",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/G41CUTEFOX/C237-Software-Application-Development--CA2.git"
+    "url": "git+https://github.com/Suppp21T/C270-Team3.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/G41CUTEFOX/C237-Software-Application-Development--CA2/issues"
+    "url": "https://github.com/Suppp21T/C270-Team3/issues"
   },
-  "homepage": "https://github.com/G41CUTEFOX/C237-Software-Application-Development--CA2#readme",
+  "homepage": "https://github.com/Suppp21T/C270-Team3#readme",
   "description": ""
 }
