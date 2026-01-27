@@ -24,11 +24,11 @@ const upload = multer({ storage: storage });
 const fs = require('fs');
 
 const connection = mysql.createConnection({
-  host: '5fp4wj.h.filess.io',
-  user: 'perfume_website_pagedetail', 
-  password: '601f1d93ebab260e41c3f973e8031d50fd65b6d9',
-  database: 'perfume_website_pagedetail',
-  port: 3307,
+  host: 'fh6-v0.h.filess.io',
+  user: 'C270_Perfume_tastestill', 
+  password: '0cb1e8502b416ca311f34a5d3a075728e08ddb13',
+  database: 'C270_Perfume_tastestill',
+  port: 61002,
 ssl: {
   ca: fs.readFileSync(
     path.join(__dirname, 'public', 'BaltimoreCyberTrustRoot.crt.pem')
