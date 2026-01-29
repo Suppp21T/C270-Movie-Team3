@@ -3,10 +3,16 @@ name: CI
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .   # <- change this if package.json is in a subfolder
 
     steps:
       - name: Checkout code
@@ -16,6 +22,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: npm
+          cache-dependency-path: package-lock.json  # change if lockfile is in subfolder
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm test
+        continue-on-error: true  # set true if your project has no tests yet
+
+      - name: Build (if you have build script)
+        run: npm run build
+        continue-on-error: true  # keep true if you don't have build script
