@@ -115,7 +115,7 @@ app.get('/',  (req, res) => {
 });
 
 app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
-     const search = req.query.search || '';
+    const search = req.query.search || '';
     const searchTerm = '%' + search + '%';
     const query = 'SELECT * FROM fragrances WHERE fragranceName LIKE ?';
 
@@ -235,8 +235,8 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
     const quantity = parseInt(req.body.quantity) || 1; 
 
     pool.query('SELECT * FROM fragrances WHERE fragranceId = ?', [fragranceId], (error, results) => {
-        if (err) {
-            console.error(err);
+        if (error) {
+            console.error(error);
             return res.status(500).send("Database error");
         }
 
@@ -280,24 +280,24 @@ app.get('/logout', (req, res) => {
 
 app.get('/fragrance/:id', checkAuthenticated, (req, res) => {
   // Extract the fragrance ID from the request parameters
-  const fragranceId = req.params.id;
+    const fragranceId = req.params.id;
 
   // Fetch data from MySQL based on the fragrance ID
-  pool.query('SELECT * FROM fragrances WHERE fragranceId = ?', [fragranceId], (error, results) => {
-      if (err) {
-            console.error(err);
+    pool.query('SELECT * FROM fragrances WHERE fragranceId = ?', [fragranceId], (error, results) => {
+        if (error) {
+            console.error(error);
             return res.status(500).send("Database error");
         }
 
       // Check if any fragrance with the given ID was found
-      if (results.length > 0) {
+        if (results.length > 0) {
           // Render HTML page with the fragrance data
           res.render('fragrance', { fragrance: results[0], user: req.session.user  });
-      } else {
+        } else {
           // If no fragrance with the given ID was found, render a 404 page or handle it accordingly
           res.status(404).send('Fragrance not found');
-      }
-  });
+        }
+    });
 });
 
 app.get('/addFragrance', checkAuthenticated, checkAdmin, (req, res) => {
@@ -335,8 +335,8 @@ app.get('/updateFragrance/:id',checkAuthenticated, checkAdmin, (req,res) => {
 
     // Fetch data from MySQL based on the fragrance ID
     pool.query(sql , [fragranceId], (error, results) => {
-        if (err) {
-            console.error(err);
+        if (error) {
+            console.error(error);
             return res.status(500).send("Database error");
         }
 
