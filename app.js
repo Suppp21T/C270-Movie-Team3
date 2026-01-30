@@ -40,7 +40,7 @@ app.get('/health', (req, res) => {
     connection.ping((err) => {
         if (err) {
             console.error('Health check failed:', err.message);
-            return res.status(123).json({ status: 'ERROR' });
+            return res.status(500).json({ status: 'ERROR' });
         }
         return res.status(200).json({ status: 'OK' });
     });
