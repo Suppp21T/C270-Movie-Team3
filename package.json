@@ -11,7 +11,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,9 @@
     "url": "https://github.com/Suppp21T/C270-Team3/issues"
   },
   "homepage": "https://github.com/Suppp21T/C270-Team3#readme",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "supertest": "^7.2.2"
+  }
 }

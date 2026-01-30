@@ -3,8 +3,9 @@
 const request = require("supertest"); // <- supertest is a testing library that simulate as a user visting web app without browser
 const app = require("../app"); //<- load app.js (main app) here
 
-//User can view a selected movie details 
-test.skip("Movie details page is accessible", async() => {
-    const res = await request(app).get("/movies/1");
-    expect(res.statusCode).toBe(200);
+//User can access and view their cart
+test("Cart page is accessible", async () => {
+  const res = await request(app).get("/cart");
+  expect(res.statusCode).toBe(302);
+  expect(res.headers.location).toBe("/login");
 });

@@ -390,5 +390,5 @@ app.post('/remove-from-cart/:id', (req, res) => {
   res.redirect('/cart');
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port http://localhost:${PORT}`));
+// Export app for Jest/Supertest and server.js
+module.exports = app;

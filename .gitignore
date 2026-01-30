@@ -1,5 +1,6 @@
 # Node modules - do not push these
 node_modules/
+node_modules/.package-lock.json
 
 # Environment variables (API keys, DB credentials)
 .env
