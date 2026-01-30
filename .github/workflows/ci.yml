@@ -39,5 +39,5 @@ jobs:
         
 
       - name: Build (if you have build script)
-        run: npm run build
+        run: npm run build --if-present
         
