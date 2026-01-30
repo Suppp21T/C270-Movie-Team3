@@ -45,6 +45,17 @@ connection.connect((err) => {
     console.log('Connected to MySQL database');
 });
 
+// Health check endpoint for CI/CD and orchestration
+app.get('/health', (req, res) => {
+    connection.ping((err) => {
+        if (err) {
+            console.error('Health check failed:', err.message);
+            return res.status(500).json({ status: 'ERROR' });
+        }
+        return res.status(200).json({ status: 'OK' });
+    });
+});
+
 // Set up view engine
 app.set('view engine', 'ejs');
 //  enable static files
