@@ -12,7 +12,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: .   # <- change this if package.json is in a subfolder
+        working-directory: .   
 
     steps:
       - name: Checkout code
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 18
           cache: npm
-          cache-dependency-path: package-lock.json  # change if lockfile is in subfolder
+          cache-dependency-path: package-lock.json  
 
       - name: Install dependencies
         run: npm ci
@@ -34,8 +34,8 @@ jobs:
 
       - name: Run tests
         run: npm test
-        continue-on-error: true  # set true if your project has no tests yet
+        continue-on-error: true  
 
       - name: Build (if you have build script)
         run: npm run build
-        continue-on-error: true  # keep true if you don't have build script
+        continue-on-error: true
