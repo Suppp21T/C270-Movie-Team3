@@ -1,5 +1,5 @@
 name: CI
-a
+
 on:
   push:
     branches: ["main"]
@@ -30,12 +30,12 @@ jobs:
 
       - name: Run linter
         run: npm run lint
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Run tests
         run: npm test
-        continue-on-error: true  
+        continue-on-error: false  
 
       - name: Build (if you have build script)
         run: npm run build
-        continue-on-error: true
+        continue-on-error: false
