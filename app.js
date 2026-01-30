@@ -23,26 +23,16 @@ const upload = multer({ storage: storage });
 
 const fs = require('fs');
 
-const connection = mysql.createConnection({
-  host: 'fh6-v0.h.filess.io',
-  user: 'C270_Perfume_tastestill', 
-  password: '0cb1e8502b416ca311f34a5d3a075728e08ddb13',
-  database: 'C270_Perfume_tastestill',
-  port: 61002,
-ssl: {
-  ca: fs.readFileSync(
-    path.join(__dirname, 'public', 'BaltimoreCyberTrustRoot.crt.pem')
-  ),
-  rejectUnauthorized: false
-}
-});
 
-connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL:', err);
-        return;
-    }
-    console.log('Connected to MySQL database');
+const pool = mysql.createPool({
+    host: 'fh6-v0.h.filess.io',
+    port: 61002,
+    user: 'C270_Perfume_tastestill',
+    password: '0cb1e8502b416ca311f34a5d3a075728e08ddb13',
+    database: 'C270_Perfume_tastestill',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
 // Set up view engine
@@ -118,7 +108,7 @@ app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
     const searchTerm = '%' + search + '%';
     const query = 'SELECT * FROM fragrances WHERE fragranceName LIKE ?';
 
-    connection.query(query, [searchTerm], (error, results) => {
+    pool.query(query, [searchTerm], (error, results) => {
         if (error) {
             console.error("Error loading inventory page:", error);
             return res.status(500).send("Error loading shopping page");
@@ -149,9 +139,10 @@ app.post('/register', validateRegistration, (req, res) => {
     const { username, email, password, address, contact, role } = req.body;
 
     const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
-    connection.query(sql, [username, email, password, address, contact, role], (err, result) => {
+    pool.query(sql, [username, email, password, address, contact, role], (err, result) => {
         if (err) {
-            throw err;
+            console.error(err);
+            return res.status(500).send("Database error");
         }
         console.log(result);
         req.flash('success', 'Registration successful! Please log in.');
@@ -172,7 +163,7 @@ app.post('/login', (req, res) => {
     }
 
     const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
-    connection.query(sql, [email, password], (err, results) => {
+    pool.query(sql, [email, password], (err, results) => {
         if (err) {
             console.error("Login DB error:", err);
             req.flash('error', 'Database error.');
@@ -206,7 +197,7 @@ app.get('/shopping', checkAuthenticated, (req, res) => {
     const searchTerm = '%' + search + '%';
     const query = 'SELECT * FROM fragrances WHERE fragranceName LIKE ?';
 
-    connection.query(query, [searchTerm], (error, results) => {
+    pool.query(query, [searchTerm], (error, results) => {
         if (error) {
             console.error("Error loading shopping page:", error);
             return res.status(500).send("Error loading shopping page");
@@ -228,14 +219,15 @@ app.get('/shopping', checkAuthenticated, (req, res) => {
     });
 });
 
-
-
 app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
     const fragranceId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1; 
 
-    connection.query('SELECT * FROM fragrances WHERE fragranceId = ?', [fragranceId], (error, results) => {
-        if (error) throw error;
+    pool.query('SELECT * FROM fragrances WHERE fragranceId = ?', [fragranceId], (error, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Database error");
+        }
 
         if (results.length > 0) {
             const fragrance = results[0];
@@ -280,8 +272,11 @@ app.get('/fragrance/:id', checkAuthenticated, (req, res) => {
   const fragranceId = req.params.id;
 
   // Fetch data from MySQL based on the fragrance ID
-  connection.query('SELECT * FROM fragrances WHERE fragranceId = ?', [fragranceId], (error, results) => {
-      if (error) throw error;
+  pool.query('SELECT * FROM fragrances WHERE fragranceId = ?', [fragranceId], (error, results) => {
+      if (err) {
+            console.error(err);
+            return res.status(500).send("Database error");
+        }
 
       // Check if any fragrance with the given ID was found
       if (results.length > 0) {
@@ -310,7 +305,7 @@ app.post('/addFragrance', (req, res) => {
     VALUES (?, ?, ?, ?, ?)
   `;
 
-  connection.query(
+  pool.query(
     sql, 
     [name, quantity, price, description, image],
     (error) => {
@@ -328,8 +323,11 @@ app.get('/updateFragrance/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const sql = 'SELECT * FROM fragrances WHERE fragranceId = ?';
 
     // Fetch data from MySQL based on the fragrance ID
-    connection.query(sql , [fragranceId], (error, results) => {
-        if (error) throw error;
+    pool.query(sql , [fragranceId], (error, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Database error");
+        }
 
         // Check if any fragrance with the given ID was found
         if (results.length > 0) {
@@ -350,7 +348,7 @@ app.post('/updateFragrance/:id', (req, res) => {
     const image = imageUrl && imageUrl.trim() !== '' ? imageUrl.trim() : currentImage;
 
     const sql = 'UPDATE fragrances SET fragranceName = ?, quantity = ?, price = ?, description = ?, image = ? WHERE fragranceId = ?';
-    connection.query(sql, [name, quantity, price, description, image, fragranceId], (error, results) => {
+    pool.query(sql, [name, quantity, price, description, image, fragranceId], (error, results) => {
         if (error) {
             console.error("Error updating fragrance:", error);
             return res.status(500).send('Error updating fragrance');
@@ -359,10 +357,9 @@ app.post('/updateFragrance/:id', (req, res) => {
     });
 });
 
-
 app.post('/deleteFragrance/:id', checkAuthenticated, checkAdmin, (req, res) => {
   const fragranceId = req.params.id;
-  connection.query('DELETE FROM fragrances WHERE fragranceId = ?', [fragranceId], (error, results) => {
+  pool.query('DELETE FROM fragrances WHERE fragranceId = ?', [fragranceId], (error, results) => {
     if (error) {
       console.error("Error deleting fragrance:", error);
       res.status(500).send('Error deleting fragrance');
@@ -370,17 +367,6 @@ app.post('/deleteFragrance/:id', checkAuthenticated, checkAdmin, (req, res) => {
       res.redirect('/inventory');
     }
   });
-});
-
-app.get('/dashboard', checkAuthenticated, (req, res) => {
-    const search = req.query.search || '';
-    const query = 'SELECT * FROM fragrances WHERE fragranceName LIKE ?';
-    const searchTerm = '%' + search + '%';
-
-    connection.query(query, [searchTerm], (error, results) => {
-        if (error) throw error;
-        res.render('dashboard', { user: req.session.user, fragrances: results, search });
-    });
 });
 
 app.post('/remove-from-cart/:id', (req, res) => {
