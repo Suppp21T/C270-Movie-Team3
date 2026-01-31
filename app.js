@@ -23,7 +23,6 @@ const upload = multer({ storage: storage });
 
 const fs = require('fs');
 
-
 const pool = mysql.createPool({
     host: 'fh6-v0.h.filess.io',
     port: 61002,
@@ -31,7 +30,7 @@ const pool = mysql.createPool({
     password: '0cb1e8502b416ca311f34a5d3a075728e08ddb13',
     database: 'C270_Perfume_tastestill',
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 2,
     queueLimit: 0
 });
 
@@ -304,7 +303,7 @@ app.get('/addFragrance', checkAuthenticated, checkAdmin, (req, res) => {
     res.render('addFragrance', {user: req.session.user } ); 
 });
 
-app.post('/addFragrance', (req, res) => {
+app.post('/addFragrance', checkAuthenticated, checkAdmin, (req, res) => {
   const { name, quantity, price, description, imageUrl } = req.body;
 
   // Use the URL (trimmed) or null if empty
@@ -351,7 +350,7 @@ app.get('/updateFragrance/:id',checkAuthenticated, checkAdmin, (req,res) => {
     });
 });
 
-app.post('/updateFragrance/:id', (req, res) => {
+app.post('/updateFragrance/:id', checkAuthenticated, checkAdmin,(req, res) => {
     const fragranceId = req.params.id;
     const { name, quantity, price, description, imageUrl, currentImage } = req.body;
 
@@ -380,7 +379,7 @@ app.post('/deleteFragrance/:id', checkAuthenticated, checkAdmin, (req, res) => {
   });
 });
 
-app.post('/remove-from-cart/:id', (req, res) => {
+app.post('/remove-from-cart/:id', checkAuthenticated, (req, res) => {
   const fragranceIdToRemove = parseInt(req.params.id);
 
   if (req.session.cart) {
@@ -390,5 +389,7 @@ app.post('/remove-from-cart/:id', (req, res) => {
   res.redirect('/cart');
 });
 
-// Export app for Jest/Supertest and server.js
-module.exports = app;
+//Export express app for Jest/Supertest, server.js and MySQL pool
+// - app is used by Supertest to simulate requests
+// - pool is exported so Jest can close DB connections after all tests finish
+module.exports = { app, pool };
