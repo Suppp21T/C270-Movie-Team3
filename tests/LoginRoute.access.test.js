@@ -14,7 +14,7 @@ test("Admin user can successfully login", async () => {
   const res = await request(app)
     .post("/login")
     .send({
-      email: "yxtadmmin@gmail.com",
+      email: "yxtadmin@gmail.com",
       password: "password321"
     });
   // Expect redirect to inventory page for admin
