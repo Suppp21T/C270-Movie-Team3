@@ -17,11 +17,19 @@ test("Shopping page with search parameter", async () => {
   expect(res.headers.location).toBe("/login");
 });
 
-// Users can add to cart requires authentication
+// Users can add to cart by requiring authentication
 test("Add to cart redirects to login if not logged in", async () => {
   const res = await request(app)
     .post("/add-to-cart/2")
     .send({ quantity: 1 });
+  expect(res.statusCode).toBe(302);
+  expect(res.headers.location).toBe("/login");
+});
+
+//Users can remove from cart by requiring authentication
+test("Remove from cart redirects to login if not logged in", async () => {
+  const res = await request(app)
+    .post("/remove-from-cart/2");
   expect(res.statusCode).toBe(302);
   expect(res.headers.location).toBe("/login");
 });

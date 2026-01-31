@@ -303,7 +303,7 @@ app.get('/addFragrance', checkAuthenticated, checkAdmin, (req, res) => {
     res.render('addFragrance', {user: req.session.user } ); 
 });
 
-app.post('/addFragrance', (req, res) => {
+app.post('/addFragrance', checkAuthenticated, checkAdmin, (req, res) => {
   const { name, quantity, price, description, imageUrl } = req.body;
 
   // Use the URL (trimmed) or null if empty
@@ -350,7 +350,7 @@ app.get('/updateFragrance/:id',checkAuthenticated, checkAdmin, (req,res) => {
     });
 });
 
-app.post('/updateFragrance/:id', (req, res) => {
+app.post('/updateFragrance/:id', checkAuthenticated, checkAdmin,(req, res) => {
     const fragranceId = req.params.id;
     const { name, quantity, price, description, imageUrl, currentImage } = req.body;
 
@@ -379,7 +379,7 @@ app.post('/deleteFragrance/:id', checkAuthenticated, checkAdmin, (req, res) => {
   });
 });
 
-app.post('/remove-from-cart/:id', (req, res) => {
+app.post('/remove-from-cart/:id', checkAuthenticated, (req, res) => {
   const fragranceIdToRemove = parseInt(req.params.id);
 
   if (req.session.cart) {
