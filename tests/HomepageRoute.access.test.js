@@ -8,5 +8,3 @@ test("Homepage is accessible", async () => {  // <- " " = text description | asy
   const res = await request(app).get("/"); // <- GET homepage and wait for responses
   expect(res.statusCode).toBe(200); // <-expected result
 });
-
-

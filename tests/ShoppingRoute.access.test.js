@@ -9,3 +9,40 @@ test("Shopping redirects to login if not logged in", async () => {
   expect(res.statusCode).toBe(302);
   expect(res.headers.location).toBe("/login");
 });
+
+//Users can use the search parameter in Shopping page
+test("Shopping page with search parameter", async () => {
+  const res = await request(app).get("/shopping?search=Lavender");
+  expect(res.statusCode).toBe(302);
+  expect(res.headers.location).toBe("/login");
+});
+
+// Users can add to cart requires authentication
+test("Add to cart redirects to login if not logged in", async () => {
+  const res = await request(app)
+    .post("/add-to-cart/1")
+    .send({ quantity: 1 });
+  expect(res.statusCode).toBe(302);
+  expect(res.headers.location).toBe("/login");
+});
+
+//Users view cart by requiring authentication if not logged in
+test("Cart page redirects to login if not logged in", async () => {
+  const res = await request(app).get("/cart");
+  expect(res.statusCode).toBe(302);
+  expect(res.headers.location).toBe("/login");
+});
+
+//Users can view fragrance details by requiring authentication if not logged in
+test("Fragrance details page redirects to login if not logged in", async () => {
+  const res = await request(app).get("/fragrance/1");
+  expect(res.statusCode).toBe(302);
+  expect(res.headers.location).toBe("/login");
+});
+
+//Users can logout successfully and be redirected to homepage
+test("Logout redirects to homepage", async () => {
+  const res = await request(app).get("/logout");
+  expect(res.statusCode).toBe(302);
+  expect(res.headers.location).toBe("/");
+});
