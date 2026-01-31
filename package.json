@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "connect-flash": "^0.1.1",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "multer": "^2.0.2",
+    "mysql2": "^3.14.2"
+  },
+  "name": "c270-team3",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Suppp21T/C270-Team3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Suppp21T/C270-Team3/issues"
+  },
+  "homepage": "https://github.com/Suppp21T/C270-Team3#readme",
+  "description": "",
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "supertest": "^7.2.2"
+  }
+}

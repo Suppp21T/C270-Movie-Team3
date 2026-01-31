@@ -1,0 +1,83 @@
+name: CD - Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+  # Note: Set up GitHub secrets before enabling deployment:
+  # - DEPLOY_KEY (SSH private key)
+  # - DEPLOY_HOST (server address)
+  # - DEPLOY_USER (SSH username) 
+  # - DEPLOY_PATH (remote directory path)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: false  # Disabled until GitHub secrets are configured
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install production dependencies only
+        run: npm install --production
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy
+          cp -r public/ deploy/
+          cp -r views/ deploy/
+          cp app.js deploy/
+          cp package.json deploy/
+          cp package-lock.json deploy/
+          cp README.md deploy/
+
+      - name: Deploy to production
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          # Create SSH directory
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Add host to known_hosts
+          ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts 2>/dev/null
+          
+          # Deploy using SCP
+          scp -i ~/.ssh/deploy_key -r deploy/* $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
+          
+          # Restart application on remote server
+          ssh -i ~/.ssh/deploy_key $DEPLOY_USER@$DEPLOY_HOST "cd $DEPLOY_PATH && npm install && pm2 restart app || pm2 start app.js --name app"
+
+      - name: Health check
+        run: |
+          sleep 5
+          # Replace with your actual application URL
+          curl -f http://${{ secrets.DEPLOY_HOST }} || exit 1
+
+      - name: Notify deployment status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const message = status === 'success' 
+              ? '✅ Deployment successful!' 
+              : '❌ Deployment failed!';
+            console.log(message);
