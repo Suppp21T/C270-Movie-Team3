@@ -23,7 +23,6 @@ const upload = multer({ storage: storage });
 
 const fs = require('fs');
 
-
 const pool = mysql.createPool({
     host: 'fh6-v0.h.filess.io',
     port: 61002,
@@ -31,7 +30,7 @@ const pool = mysql.createPool({
     password: '0cb1e8502b416ca311f34a5d3a075728e08ddb13',
     database: 'C270_Perfume_tastestill',
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 2,
     queueLimit: 0
 });
 
@@ -390,5 +389,7 @@ app.post('/remove-from-cart/:id', (req, res) => {
   res.redirect('/cart');
 });
 
-// Export app for Jest/Supertest and server.js
-module.exports = app;
+//Export express app for Jest/Supertest, server.js and MySQL pool
+// - app is used by Supertest to simulate requests
+// - pool is exported so Jest can close DB connections after all tests finish
+module.exports = { app, pool };

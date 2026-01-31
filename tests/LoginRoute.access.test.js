@@ -1,12 +1,12 @@
 //Automate test code scripts for testing login functionality within the application
 
 const request = require("supertest"); // <- supertest is a testing library that simulates a user visiting web app without browser
-const app = require("../app"); //<- load app.js (main app) here
+const { app } = require("../app"); //<- import app.js (main app) here
 
 //Users can access login page
 test("Login page is accessible", async () => {  // <- " " = text description | async = wait for responses
   const res = await request(app).get("/login"); // <- GET login page and wait for responses
-  expect(res.statusCode).toBe(200); // <- expected result
+  expect(res.statusCode).toBe(200); // <- expected page to load
 });
 
 //Admin can successfully login with valid credentials
