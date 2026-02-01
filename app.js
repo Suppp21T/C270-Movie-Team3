@@ -24,13 +24,13 @@ const upload = multer({ storage: storage });
 const fs = require('fs');
 
 const pool = mysql.createPool({
-    host: 'fh6-v0.h.filess.io',
-    port: 61002,
-    user: 'C270_Perfume_tastestill',
-    password: '0cb1e8502b416ca311f34a5d3a075728e08ddb13',
-    database: 'C270_Perfume_tastestill',
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
     waitForConnections: true,
-    connectionLimit: 2,
+    connectionLimit: 10,
     queueLimit: 0
 });
 
